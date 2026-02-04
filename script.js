@@ -1,7 +1,6 @@
 // --- Elements ---
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
-const noArea = document.getElementById("noArea");
 const result = document.getElementById("result");
 const card = document.getElementById("card");
 
@@ -13,10 +12,6 @@ let confettiPieces = [];
 let rafId = null;
 
 // --- Helpers ---
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
-
 function setCanvasSize() {
   const dpr = Math.max(1, window.devicePixelRatio || 1);
   confettiCanvas.width = Math.floor(window.innerWidth * dpr);
@@ -30,26 +25,6 @@ function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function moveNoButton() {
-  const areaRect = noArea.getBoundingClientRect();
-  const btnRect = noBtn.getBoundingClientRect();
-
-  // Compute movement bounds inside noArea
-  const maxX = areaRect.width - btnRect.width;
-  const maxY = areaRect.height - btnRect.height;
-
-  // If area is too small, just nudge
-  const x = clamp(rand(0, maxX), 0, Math.max(0, maxX));
-  const y = clamp(rand(0, maxY), 0, Math.max(0, maxY));
-
-  noBtn.style.left = `${x}px`;
-  noBtn.style.top = `${y}px`;
-
-  // Fun tiny rotation
-  const rot = rand(-10, 10);
-  noBtn.style.transform = `rotate(${rot}deg)`;
-}
-
 function showYesMessage() {
   result.innerHTML = `
     <div class="pop">
@@ -61,15 +36,6 @@ function showYesMessage() {
   card.classList.remove("pop");
   void card.offsetWidth; // reflow
   card.classList.add("pop");
-}
-
-function showNoTease() {
-  result.innerHTML = `
-    <div class="pop">
-      <div class="big">Nice try 😄</div>
-      <div class="small">That button is… unavailable today 😈</div>
-    </div>
-  `;
 }
 
 // --- Confetti ---
@@ -136,26 +102,6 @@ function stopConfetti() {
 }
 
 // --- Events ---
-// Desktop: Hover makes it run away
-noBtn.addEventListener("mouseenter", () => {
-  moveNoButton();
-  showNoTease();
-});
-
-// Mobile: Touchstart makes it jump away before click
-noBtn.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // prevent "click" from firing reliably
-  moveNoButton();
-  showNoTease();
-}, { passive: false });
-
-// If someone somehow clicks No, still move it
-noBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  moveNoButton();
-  showNoTease();
-});
-
 // Yes: celebrate
 yesBtn.addEventListener("click", () => {
   showYesMessage();
@@ -168,9 +114,11 @@ yesBtn.addEventListener("click", () => {
   noBtn.style.opacity = "0.7";
 });
 
-// On load, place No randomly once
 window.addEventListener("load", () => {
-  moveNoButton();
+  noBtn.classList.add("offscreen");
+  noBtn.disabled = true;
+  noBtn.setAttribute("aria-hidden", "true");
+  noBtn.tabIndex = -1;
   setCanvasSize();
 });
 

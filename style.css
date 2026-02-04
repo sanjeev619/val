@@ -111,6 +111,12 @@ h1 {
   top: 0;
 }
 
+.no-area .no.offscreen {
+  left: -10000px;
+  top: -10000px;
+  pointer-events: none;
+}
+
 /* Result area */
 .result {
   margin-top: 18px;

@@ -136,25 +136,24 @@ function stopConfetti() {
 }
 
 // --- Events ---
-// Desktop: Hover makes it run away
-noBtn.addEventListener("mouseenter", () => {
+// Desktop: Hover/move within the area makes it run away
+noArea.addEventListener("mousemove", () => {
   moveNoButton();
   showNoTease();
 });
 
 // Mobile: Touchstart makes it jump away before click
-noBtn.addEventListener("touchstart", (e) => {
+noArea.addEventListener("touchstart", (e) => {
   e.preventDefault(); // prevent "click" from firing reliably
   moveNoButton();
   showNoTease();
 }, { passive: false });
 
-// If someone somehow clicks No, still move it
-noBtn.addEventListener("click", (e) => {
+noArea.addEventListener("touchmove", (e) => {
   e.preventDefault();
   moveNoButton();
   showNoTease();
-});
+}, { passive: false });
 
 // Yes: celebrate
 yesBtn.addEventListener("click", () => {

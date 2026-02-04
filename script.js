@@ -136,20 +136,20 @@ function stopConfetti() {
 }
 
 // --- Events ---
-// Desktop: Hover/move within the area makes it run away
-noArea.addEventListener("mousemove", () => {
+// Desktop: Hover/move anywhere on the card makes it run away
+card.addEventListener("mousemove", () => {
   moveNoButton();
   showNoTease();
 });
 
 // Mobile: Touchstart makes it jump away before click
-noArea.addEventListener("touchstart", (e) => {
+card.addEventListener("touchstart", (e) => {
   e.preventDefault(); // prevent "click" from firing reliably
   moveNoButton();
   showNoTease();
 }, { passive: false });
 
-noArea.addEventListener("touchmove", (e) => {
+card.addEventListener("touchmove", (e) => {
   e.preventDefault();
   moveNoButton();
   showNoTease();

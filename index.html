@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hey Beaultiful Lady, Will you be my Valentine?</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="confetti" aria-hidden="true"></canvas>
+
+    <main class="card" id="card">
+      <div class="emoji" aria-hidden="true">💘</div>
+      <h1>Will you be my Valentine?</h1>
+      <p class="sub">Be honest… but choose wisely 😄</p>
+
+      <section class="buttons" aria-label="Valentine options">
+        <button id="yesBtn" class="btn yes" type="button">
+          Yes <span aria-hidden="true">🥰</span>
+        </button>
+
+        <!-- This wrapper gives us a bounding box to move the No button around -->
+        <div id="noArea" class="no-area">
+          <button id="noBtn" class="btn no" type="button">
+            No <span aria-hidden="true">🙃</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="result" class="result" aria-live="polite"></section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

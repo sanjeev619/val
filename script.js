@@ -30,23 +30,46 @@ function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function moveNoButton() {
+function moveNoButton(cursorX, cursorY) {
+  const cardRect = card.getBoundingClientRect();
   const areaRect = noArea.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
 
-  // Compute movement bounds inside noArea
-  const maxX = areaRect.width - btnRect.width;
-  const maxY = areaRect.height - btnRect.height;
+  const fallbackX = cardRect.left + cardRect.width / 2;
+  const fallbackY = cardRect.top + cardRect.height / 2;
+  const pointerX = cursorX ?? fallbackX;
+  const pointerY = cursorY ?? fallbackY;
 
-  // If area is too small, just nudge
-  const x = clamp(rand(0, maxX), 0, Math.max(0, maxX));
-  const y = clamp(rand(0, maxY), 0, Math.max(0, maxY));
+  const margin = 12;
+  const minX = cardRect.left + margin;
+  const maxX = cardRect.right - btnRect.width - margin;
+  const minY = cardRect.top + margin;
+  const maxY = cardRect.bottom - btnRect.height - margin;
 
-  noBtn.style.left = `${x}px`;
-  noBtn.style.top = `${y}px`;
+  const currentCenterX = btnRect.left + btnRect.width / 2;
+  const currentCenterY = btnRect.top + btnRect.height / 2;
+  const dx = currentCenterX - pointerX;
+  const dy = currentCenterY - pointerY;
 
-  // Fun tiny rotation
-  const rot = rand(-10, 10);
+  const boost = rand(90, 170);
+  const jitterX = rand(-36, 36);
+  const jitterY = rand(-36, 36);
+
+  const targetViewportX = clamp(
+    btnRect.left + dx * 0.65 + Math.sign(dx || 1) * boost + jitterX,
+    minX,
+    maxX,
+  );
+  const targetViewportY = clamp(
+    btnRect.top + dy * 0.65 + Math.sign(dy || 1) * boost + jitterY,
+    minY,
+    maxY,
+  );
+
+  noBtn.style.left = `${targetViewportX - areaRect.left}px`;
+  noBtn.style.top = `${targetViewportY - areaRect.top}px`;
+
+  const rot = rand(-14, 14);
   noBtn.style.transform = `rotate(${rot}deg)`;
 }
 
@@ -136,24 +159,37 @@ function stopConfetti() {
 }
 
 // --- Events ---
-// Desktop: Hover/move anywhere on the card makes it run away
-card.addEventListener("mousemove", () => {
-  moveNoButton();
+// Desktop: the No button runs from the cursor immediately
+card.addEventListener("mousemove", (e) => {
+  moveNoButton(e.clientX, e.clientY);
   showNoTease();
 });
 
 // Mobile: Touchstart makes it jump away before click
 card.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // prevent "click" from firing reliably
-  moveNoButton();
+  const t = e.touches[0];
+  if (!t) return;
+  moveNoButton(t.clientX, t.clientY);
   showNoTease();
-}, { passive: false });
+}, { passive: true });
 
 card.addEventListener("touchmove", (e) => {
+  const t = e.touches[0];
+  if (!t) return;
+  moveNoButton(t.clientX, t.clientY);
+  showNoTease();
+}, { passive: true });
+
+noBtn.addEventListener("mouseenter", (e) => {
+  moveNoButton(e.clientX, e.clientY);
+  showNoTease();
+});
+
+noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   moveNoButton();
   showNoTease();
-}, { passive: false });
+});
 
 // Yes: celebrate
 yesBtn.addEventListener("click", () => {
